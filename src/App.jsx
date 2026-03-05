@@ -7,31 +7,52 @@ import {
   Music, 
   Wind,
   Eye,
-  ArrowDown
+  ArrowDown,
+  Play,
+  Pause
 } from 'lucide-react';
-// import the song file (alternatively use a URL string if you put it in public/)
-import songFile from './assets/seafoam-serenade.mp3';
 
 const App = () => {
   const [isBright, setIsBright] = useState(false);
   const [isDancing, setIsDancing] = useState(false);
   const [hasOcean, setHasOcean] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [visibleStanzas, setVisibleStanzas] = useState(1);
   const [pulses, setPulses] = useState([]);
-
+  
   const audioRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
 
-  const togglePlayback = (e) => {
-    // prevent the global click handler from firing
-    e.stopPropagation();
+  // Audio Playback & Sync Logic
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleAudioEnded = () => {
+    setIsPlaying(false);
+  };
+
+  const handleTimeUpdate = () => {
     if (!audioRef.current) return;
-    if (audioRef.current.paused) {
-      audioRef.current.play();
-      setIsPlaying(true);
-    } else {
-      audioRef.current.pause();
-      setIsPlaying(false);
+    const currentTime = audioRef.current.currentTime;
+    
+    // Calculate how many stanzas should be visible based on the current audio time
+    let targetStanzas = 1;
+    poem.forEach((stanza, idx) => {
+      if (currentTime >= stanza.time) {
+        targetStanzas = idx + 1;
+      }
+    });
+
+    // Only update if the audio pushes us forward (allows manual reading ahead)
+    if (targetStanzas > visibleStanzas) {
+      setVisibleStanzas(targetStanzas);
     }
   };
 
@@ -50,9 +71,10 @@ const App = () => {
     }
   };
 
-  // Lyrics extracted directly from the sheet music verses
+  // Lyrics with temporal mapping (time in seconds)
   const poem = [
     {
+      time: 0.0,
       lines: [
         "The sun comes up",
         "in the morning.",
@@ -61,6 +83,7 @@ const App = () => {
       ]
     },
     {
+      time: 10.5,
       lines: [
         "Joy flows within my soul",
         "and a song",
@@ -69,6 +92,7 @@ const App = () => {
       highlight: true
     },
     {
+      time: 16.0,
       lines: [
         "I sing my song",
         "without worry.",
@@ -77,6 +101,7 @@ const App = () => {
       ]
     },
     {
+      time: 21.0,
       lines: [
         "My life is a mystery,",
         "my song",
@@ -84,6 +109,7 @@ const App = () => {
       ]
     },
     {
+      time: 25.5,
       lines: [
         "On wings we soar",
         "ever outward.",
@@ -93,6 +119,7 @@ const App = () => {
       highlight: true
     },
     {
+      time: 31.0,
       lines: [
         "Our song is a jubilee",
         "sung beyond",
@@ -119,6 +146,15 @@ const App = () => {
         )}
       </div>
 
+      {/* Hidden Audio Element with Sync Listener */}
+      <audio 
+        ref={audioRef} 
+        src="seafoam-serenade.mp3" 
+        onEnded={handleAudioEnded}
+        onTimeUpdate={handleTimeUpdate}
+        preload="auto"
+      />
+
       {/* Ripple Pulses */}
       {pulses.map(p => (
         <div 
@@ -137,19 +173,14 @@ const App = () => {
           </h1>
           <p className="text-lg font-serif italic text-teal-600 tracking-wide">by Mykyl Nordwind</p>
 
-          {/* audio controls */}
-          <div className="mt-6 flex justify-center gap-4">
-            <button
-              onClick={togglePlayback}
-              className="px-5 py-2 rounded-full bg-teal-500 text-slate-900 font-black uppercase tracking-widest"
-            >
-              {isPlaying ? 'Pause song' : 'Play song'}
-            </button>
-          </div>
-          <audio ref={audioRef} src={songFile} />
-
           {/* Controls */}
-          <div className="flex justify-center gap-3 mt-12 opacity-50 hover:opacity-100 transition-opacity">
+          <div className="flex justify-center flex-wrap gap-3 mt-12 opacity-50 hover:opacity-100 transition-opacity">
+             <ProtocolButton 
+                active={isPlaying} 
+                onClick={togglePlay} 
+                icon={isPlaying ? <Pause size={14}/> : <Play size={14}/>} 
+                label={isPlaying ? "Pause" : "Play"} 
+             />
              <ProtocolButton 
                 active={hasOcean} 
                 onClick={() => setHasOcean(!hasOcean)} 
