@@ -12,6 +12,9 @@ import {
   Pause
 } from 'lucide-react';
 
+// 1. Import the audio file directly
+import seafoamAudio from './Seafoam_Serenade.mp3';
+
 const App = () => {
   const [isBright, setIsBright] = useState(false);
   const [isDancing, setIsDancing] = useState(false);
@@ -149,7 +152,7 @@ const App = () => {
       {/* Hidden Audio Element with Sync Listener */}
       <audio 
         ref={audioRef} 
-        src="Seafoam_Serenade.mp3" 
+        src={seafoamAudio}
         onEnded={handleAudioEnded}
         onTimeUpdate={handleTimeUpdate}
         preload="auto"
