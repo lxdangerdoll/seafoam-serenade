@@ -149,7 +149,7 @@ const App = () => {
       {/* Hidden Audio Element with Sync Listener */}
       <audio 
         ref={audioRef} 
-        src="seafoam-serenade.mp3" 
+        src="Seafoam_Serenade.mp3" 
         onEnded={handleAudioEnded}
         onTimeUpdate={handleTimeUpdate}
         preload="auto"
