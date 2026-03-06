@@ -94,21 +94,22 @@ const App = () => {
       ],
       highlight: true
     },
+
     {
       time: 16.0,
+      lines: [
+        "My life is a mystery,",
+        "my song",
+        "it fills the air."
+      ]
+    },
+        {
+      time: 21.0,
       lines: [
         "I sing my song",
         "without worry.",
         "I sing my song",
         "without care."
-      ]
-    },
-    {
-      time: 21.0,
-      lines: [
-        "My life is a mystery,",
-        "my song",
-        "it fills the air."
       ]
     },
     {
